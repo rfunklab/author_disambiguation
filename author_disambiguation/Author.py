@@ -2,7 +2,8 @@
 
 
 class Author(object):
-    '''Class object representing Authors. Author
+    '''Class object representing Authors. Author identified by `id`, but can be
+    instantiated using only `lastname`. 
     '''
     def __init__(self, lastname, firstname=None):
         self.lastname = lastname
