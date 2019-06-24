@@ -6,14 +6,13 @@ import numpy as np
 def sigmoid(x):
     return float(1) / (1 + math.exp(-x))
 
-
 def construct_doc_matrix(dict, paper_list):
     """
     construct the learned embedding for document clustering
     dict: {paper_index, numpy_array}
     """
     D_matrix = dict[paper_list[0]]
-    for idx in xrange(1, len(paper_list)):
+    for idx in range(1, len(paper_list)):
         D_matrix = np.vstack((D_matrix, dict[paper_list[idx]]))
     return D_matrix
 

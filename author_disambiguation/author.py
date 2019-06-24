@@ -3,31 +3,38 @@
 
 class Author(object):
     '''Class object representing Authors. Author identified by `id`, but can be
-    instantiated using only `lastname`.
-    '''
-    def __init__(self, lastname, firstname=None):
+    instantiated using only `name`.'''
+    def __init__(self, name, lastname=None, firstname=None, id=None):
+        self.name = name
         self.lastname = lastname
         self.firstname = firstname
         self.works = []
-        self.id = None
+        self.id = id
 
     def __eq__(self, other):
-    '''Checks for equality between author objects. Depends solely on the `id`
-    variable for now.'''
+        '''Checks for equality between author objects. Depends solely on the `id`
+        variable. If `id` not present, returns false.'''
         if isinstance(other, Author):
-            if self.id is None:
-                return False
-            if other.id is None:
-                return False
-            else:
+            if self.id is not None and other.id is not None:
                 return self.id == other.id
+            else:
+                return self.name == other.name
+                # return False
         return False
 
-    def add_work(self, work_id):
+    def __repr__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def add_work(self, work):
         '''Adds a work (paper, patent, etc.) to an author's `works` which is a
-        list of work ids
-        '''
-        if work_id not in self.works:
-            self.works.append(work_id)
+        list of work objects.'''
+        if work not in self.works:
+            self.works.append(work)
         else:
-            raise AttributeError('Cannot add work; `work_id` already in authors works.')
+            raise AttributeError('Cannot add work: already in authors works.')

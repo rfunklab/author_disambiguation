@@ -2,7 +2,7 @@
 
 import numpy as np
 import random
-from utils import softmax
+from author_disambiguation.utils import softmax
 
 
 """
@@ -13,19 +13,19 @@ notation details are in the paper
 
 class CoauthorGraphSampler():
     @staticmethod
-    def generate_triplet_uniform(dataset):
+    def generate_triplet_uniform(coauthor_graph):
         """
         sample negative instance uniformly
         """
-        a_i = random.choice(dataset.C_Graph.nodes())
-        a_t = random.choice(dataset.coauthor_list)
+        a_i = random.choice(list(coauthor_graph.nodes()))
+        a_t = random.choice(list(coauthor_graph.nodes()))
 
         while True:
-            neig_list = dataset.C_Graph.neighbors(a_i)
-            if a_t not in neig_list:
+            neig_list = list(coauthor_graph.neighbors(a_i))
+            if a_t not in neig_list and len(neig_list) > 0:
                 # given a_i, sample its neighbor based on its weight value
                 # idea of edge sampling
-                weight_list = [dataset.C_Graph[a_i][nbr]['weight']
+                weight_list = [coauthor_graph[a_i][nbr]['weight']
                                for nbr in neig_list]
                 norm_weight_list = [float(w) / sum(weight_list)
                                     for w in weight_list]
@@ -34,8 +34,8 @@ class CoauthorGraphSampler():
                 break
 
             else:
-                a_i = random.choice(dataset.C_Graph.nodes())
-                a_t = random.choice(dataset.coauthor_list)
+                a_i = random.choice(list(coauthor_graph.nodes()))
+                a_t = random.choice(list(coauthor_graph.nodes()))
 
     @staticmethod
     def generate_triplet_reject(dataset, bpr_optimizer):
@@ -96,16 +96,16 @@ class CoauthorGraphSampler():
 
 class LinkedDocGraphSampler():
     @staticmethod
-    def generate_triplet_uniform(dataset):
-        d_i = random.choice(dataset.D_Graph.nodes())
-        d_t = random.choice(dataset.paper_list)
+    def generate_triplet_uniform(work_graph):
+        d_i = random.choice(list(work_graph.nodes()))
+        d_t = random.choice(list(work_graph.nodes()))
 
         while True:
-            neig_list = dataset.D_Graph.neighbors(d_i)
-            if d_t not in neig_list:
+            neig_list = list(work_graph.neighbors(d_i))
+            if d_t not in neig_list and len(neig_list) > 0:
                 # given d_i, sample its neighbor based on its weight value
                 # idea of edge sampling
-                weight_list = [dataset.D_Graph[d_i][nbr]['weight']
+                weight_list = [work_graph[d_i][nbr]['weight']
                                for nbr in neig_list]
                 norm_weight_list = [float(w) / sum(weight_list)
                                     for w in weight_list]
@@ -114,8 +114,8 @@ class LinkedDocGraphSampler():
                 break
 
             else:
-                d_i = random.choice(dataset.D_Graph.nodes())
-                d_t = random.choice(dataset.paper_list)
+                d_i = random.choice(list(work_graph.nodes()))
+                d_t = random.choice(list(work_graph.nodes()))
 
     @staticmethod
     def generate_triplet_reject(dataset, bpr_optimizer):
@@ -176,20 +176,19 @@ class LinkedDocGraphSampler():
 
 class BipartiteGraphSampler():
     @staticmethod
-    def generate_triplet_uniform(dataset):
-        d_i = random.choice(dataset.paper_list)
-        a_t = random.choice(dataset.coauthor_list)
+    def generate_triplet_uniform(author_work_graph, coauthor_graph, work_graph):
+        d_i = random.choice(list(work_graph.nodes()))
+        a_t = random.choice(list(coauthor_graph.nodes()))
 
         while True:
-            if dataset.paper_authorlist_dict[d_i] != [] \
-                and a_t not in dataset.paper_authorlist_dict[d_i]:
-                a_j = random.choice(dataset.paper_authorlist_dict[d_i])
+            if not author_work_graph.has_edge(d_i, a_t):
+                a_j = random.choice(list(author_work_graph.neighbors(d_i)))
                 yield d_i, a_j, a_t
                 break
 
             else:
-                d_i = random.choice(dataset.paper_list)
-                a_t = random.choice(dataset.coauthor_list)
+                d_i = random.choice(list(work_graph.nodes()))
+                a_t = random.choice(list(coauthor_graph.nodes()))
 
     @staticmethod
     def generate_triplet_reject(dataset, bpr_optimizer):
