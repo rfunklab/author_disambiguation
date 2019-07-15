@@ -17,6 +17,9 @@ def compute_f1(ground_truth_dict, bpr_optimizer):
     for k,auths in ground_truth_dict.items():
         true_clusters = true_clusters.union(set(auths))
     true_cluster_size = len(true_clusters)
+    if true_cluster_size > D_matrix.shape[0]:
+        print('True cluster size: {}, Approximated cluster size: {}'.format(true_cluster_size, D_matrix.shape[0]))
+        return None
     y_pred = AgglomerativeClustering(n_clusters = true_cluster_size,
                                      linkage = "average",
                                      affinity = "cosine").fit_predict(D_matrix)

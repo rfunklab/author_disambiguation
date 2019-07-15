@@ -23,7 +23,7 @@ class Work(object):
         if self.title is not None:
             return self.title
         else:
-            return ''
+            return self.id
 
     def __str__(self):
         return self.title
